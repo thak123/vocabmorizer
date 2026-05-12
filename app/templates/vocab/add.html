@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Add Word — Vocabmorizer{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold mb-6">Add New Word</h1>
+  <form method="POST" enctype="multipart/form-data"
+        class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+    {% include "vocab/_form.html" %}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Practice — Vocabmorizer{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <h1 class="text-2xl font-bold mb-2">Practice</h1>
+  <p class="text-sm text-gray-500 mb-6">
+    {{ total }} word{{ 's' if total != 1 }}&ensp;·&ensp;
+    <span class="text-red-500">{{ problematic }} problematic</span>&ensp;·&ensp;
+    <span class="text-indigo-600">{{ due }} due today</span>
+  </p>
+
+  <form method="POST" action="{{ url_for('practice.start') }}"
+        class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-5">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Mode -->
+    <fieldset>
+      <legend class="block text-sm font-medium mb-2">Review mode</legend>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {% for value, label, count in [
+          ('all',         'All words',   total),
+          ('due',         'Due today',   due),
+          ('problematic', 'Problem words', problematic),
+          ('random',      'Random',      total),
+        ] %}
+        <label class="flex flex-col items-center p-3 border rounded-lg cursor-pointer
+                      has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 hover:border-gray-400 transition">
+          <input type="radio" name="mode" value="{{ value }}"
+                 {% if value == 'all' %}checked{% endif %}
+                 class="sr-only">
+          <span class="font-medium text-sm">{{ label }}</span>
+          <span class="text-xs text-gray-400 mt-0.5">{{ count }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <!-- Lecture filter -->
+    {% if lectures %}
+    <div>
+      <label class="block text-sm font-medium mb-1" for="lecture">Filter by lecture</label>
+      <select name="lecture" id="lecture"
+              class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <option value="">All lectures</option>
+        {% for lec in lectures %}
+        <option value="{{ lec }}">{{ lec }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+
+    <!-- Date range -->
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="block text-sm font-medium mb-1" for="date_from">Added from</label>
+        <input type="date" name="date_from" id="date_from"
+               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="date_to">Added to</label>
+        <input type="date" name="date_to" id="date_to"
+               class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+    </div>
+
+    <button type="submit"
+            class="w-full bg-indigo-600 text-white rounded py-2.5 text-sm font-medium hover:bg-indigo-700">
+      Start Practice →
+    </button>
+  </form>
+</div>
+{% endblock %}

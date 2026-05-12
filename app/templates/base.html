@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Vocabmorizer{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+    <a href="/" class="text-xl font-bold text-indigo-600">Vocabmorizer</a>
+    <div class="flex items-center gap-4 text-sm">
+      {% if current_user.is_authenticated %}
+        <span class="text-gray-500">{{ current_user.name }}</span>
+        {% if current_user.is_admin() %}
+          <a href="/admin" class="text-indigo-600 hover:underline">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="text-gray-600 hover:underline">Sign out</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="text-indigo-600 hover:underline">Sign in</a>
+        <a href="{{ url_for('auth.register') }}" class="text-gray-600 hover:underline">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Flash messages -->
+  <div class="px-6 pt-4">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      {% set color = {
+        'success': 'green',
+        'danger': 'red',
+        'info': 'blue',
+        'warning': 'yellow'
+      }.get(category, 'gray') %}
+      <div class="mb-2 px-4 py-2 rounded bg-{{ color }}-100 text-{{ color }}-800 border border-{{ color }}-200 text-sm">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Page content -->
+  <main class="flex-1 px-6 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center text-xs text-gray-400 py-4">
+    Vocabmorizer
+  </footer>
+
+</body>
+</html>

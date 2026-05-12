@@ -1,0 +1,72 @@
+{# Shared form body for add.html and edit.html #}
+{{ form.hidden_tag() }}
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+  <div>
+    {{ form.word.label(class="block text-sm font-medium mb-1") }}
+    {{ form.word(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500") }}
+    {% for e in form.word.errors %}<p class="text-red-600 text-xs mt-1">{{ e }}</p>{% endfor %}
+  </div>
+
+  <div>
+    {{ form.target_language.label(class="block text-sm font-medium mb-1") }}
+    {{ form.target_language(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500") }}
+  </div>
+
+  <div>
+    {{ form.translation_en.label(class="block text-sm font-medium mb-1") }}
+    {{ form.translation_en(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500") }}
+    {% for e in form.translation_en.errors %}<p class="text-red-600 text-xs mt-1">{{ e }}</p>{% endfor %}
+  </div>
+
+  <div>
+    {{ form.lecture.label(class="block text-sm font-medium mb-1") }}
+    {{ form.lecture(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500", placeholder="e.g. French 101") }}
+    {% for e in form.lecture.errors %}<p class="text-red-600 text-xs mt-1">{{ e }}</p>{% endfor %}
+  </div>
+
+  <div>
+    {{ form.synonyms.label(class="block text-sm font-medium mb-1") }}
+    {{ form.synonyms(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500", placeholder="fast, quick, swift") }}
+    <p class="text-xs text-gray-400 mt-0.5">Comma-separated</p>
+  </div>
+
+  <div>
+    {{ form.antonyms.label(class="block text-sm font-medium mb-1") }}
+    {{ form.antonyms(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500", placeholder="slow, sluggish") }}
+    <p class="text-xs text-gray-400 mt-0.5">Comma-separated</p>
+  </div>
+
+  <div>
+    {{ form.date_added.label(class="block text-sm font-medium mb-1") }}
+    {{ form.date_added(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500") }}
+    {% for e in form.date_added.errors %}<p class="text-red-600 text-xs mt-1">{{ e }}</p>{% endfor %}
+  </div>
+
+  <div>
+    {{ form.image.label(class="block text-sm font-medium mb-1") }}
+    {{ form.image(class="w-full text-sm text-gray-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100") }}
+    <p class="text-xs text-gray-400 mt-0.5">JPG, PNG, GIF, WebP — max 2 MB</p>
+  </div>
+
+</div>
+
+<div class="mt-4">
+  {{ form.meaning.label(class="block text-sm font-medium mb-1") }}
+  {{ form.meaning(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500", rows=3) }}
+  {% for e in form.meaning.errors %}<p class="text-red-600 text-xs mt-1">{{ e }}</p>{% endfor %}
+</div>
+
+<div class="mt-4">
+  {{ form.metadata_usage.label(class="block text-sm font-medium mb-1") }}
+  {{ form.metadata_usage(class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500", rows=3, placeholder="Morphology, example sentences, usage notes…") }}
+</div>
+
+<div class="mt-6 flex gap-3">
+  {{ form.submit(class="bg-indigo-600 text-white px-6 py-2 rounded text-sm font-medium hover:bg-indigo-700 cursor-pointer") }}
+  <a href="{{ url_for('vocab.list_entries') }}"
+     class="px-6 py-2 rounded text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">
+    Cancel
+  </a>
+</div>

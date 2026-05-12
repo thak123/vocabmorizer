@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk pytest *)",
+      "Bash(rtk ruff *)",
+      "Bash(rtk grep *)"
+    ]
+  }
+}

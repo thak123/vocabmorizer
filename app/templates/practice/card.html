@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Practice {{ index + 1 }}/{{ total }} — Vocabmorizer{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto" id="practice-root"
+     data-entry-id="{{ entry.id }}"
+     data-record-url="{{ url_for('practice.record') }}"
+     data-lang="{{ entry.target_language }}">
+
+  <!-- Progress bar -->
+  <div class="flex items-center gap-3 mb-6">
+    <div class="flex-1 bg-gray-200 rounded-full h-2">
+      <div class="bg-indigo-500 h-2 rounded-full transition-all"
+           style="width: {{ ((index) / total * 100)|round|int }}%"></div>
+    </div>
+    <span class="text-sm text-gray-500 whitespace-nowrap">{{ index + 1 }} / {{ total }}</span>
+  </div>
+
+  <!-- Card -->
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-8 text-center min-h-64 flex flex-col justify-between">
+
+    <!-- Prompt (always visible) -->
+    <div>
+      <p class="text-xs text-gray-400 uppercase tracking-wide mb-3">English Translation</p>
+      <p class="text-2xl font-semibold text-gray-800">{{ entry.translation_en }}</p>
+      {% if entry.synonyms %}
+        <p class="text-sm text-gray-400 mt-2">≈ {{ entry.synonyms | join(", ") }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Answer (hidden until revealed) -->
+    <div id="answer-section" class="hidden mt-6 pt-6 border-t border-gray-100">
+      <p class="text-xs text-gray-400 uppercase tracking-wide mb-2">Word</p>
+      <div class="flex items-center justify-center gap-3">
+        <p class="text-3xl font-bold text-indigo-700">{{ entry.word }}</p>
+        <button onclick="speak('{{ entry.word|e }}', '{{ entry.target_language }}')"
+                class="text-gray-400 hover:text-indigo-500 text-xl" title="Listen">🔊</button>
+      </div>
+      {% if entry.antonyms %}
+        <p class="text-sm text-gray-400 mt-1">≠ {{ entry.antonyms | join(", ") }}</p>
+      {% endif %}
+      {% if entry.meaning %}
+        <p class="text-sm text-gray-500 mt-3 italic">{{ entry.meaning }}</p>
+      {% endif %}
+      {% if entry.metadata_usage %}
+        <p class="text-xs text-gray-400 mt-2">{{ entry.metadata_usage }}</p>
+      {% endif %}
+      {% if entry.image_path %}
+        <img src="{{ url_for('static', filename=entry.image_path.replace('data/', '')) }}"
+             alt="{{ entry.word }}"
+             class="mx-auto mt-4 h-32 object-contain rounded">
+      {% endif %}
+
+      {% if entry.review_stats and entry.review_stats.is_problematic %}
+        <p class="mt-3 text-xs text-red-500 font-medium">⚠ Problematic word</p>
+      {% endif %}
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-6">
+      <button id="reveal-btn"
+              class="w-full bg-gray-100 text-gray-700 rounded-lg py-2.5 text-sm font-medium hover:bg-gray-200">
+        Show Answer
+      </button>
+      <div id="result-btns" class="hidden grid grid-cols-3 gap-3 mt-3">
+        <button data-result="incorrect"
+                class="result-btn py-2.5 rounded-lg text-sm font-medium bg-red-50 text-red-700 hover:bg-red-100 border border-red-200">
+          ✗ Incorrect
+        </button>
+        <button data-result="need_review"
+                class="result-btn py-2.5 rounded-lg text-sm font-medium bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-yellow-200">
+          ↻ Review again
+        </button>
+        <button data-result="correct"
+                class="result-btn py-2.5 rounded-lg text-sm font-medium bg-green-50 text-green-700 hover:bg-green-100 border border-green-200">
+          ✓ Correct
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-gray-400 mt-4">
+    Lecture: {{ entry.lecture }} &ensp;·&ensp; {{ entry.target_language }}
+    &ensp;·&ensp; <a href="{{ url_for('practice.setup') }}" class="hover:underline">Exit practice</a>
+  </p>
+</div>
+
+<script src="{{ url_for('static', filename='js/tts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/practice.js') }}"></script>
+{% endblock %}
