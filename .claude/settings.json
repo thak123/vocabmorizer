@@ -3,7 +3,9 @@
     "allow": [
       "Bash(rtk pytest *)",
       "Bash(rtk ruff *)",
-      "Bash(rtk grep *)"
+      "Bash(rtk grep *)",
+      "Bash(pybabel extract *)",
+      "Bash(pybabel compile *)"
     ]
   }
 }

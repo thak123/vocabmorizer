@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Import Preview — Vocabmorizer{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <h1 class="text-2xl font-bold mb-1">Import Preview</h1>
+  <p class="text-sm text-gray-500 mb-6">Review the data before committing it to your vocabulary.</p>
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+      <p class="text-3xl font-bold text-green-700">{{ valid_count }}</p>
+      <p class="text-sm text-green-600 mt-1">New word{{ 's' if valid_count != 1 else '' }} to import</p>
+    </div>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+      <p class="text-3xl font-bold text-yellow-700">{{ dup_count }}</p>
+      <p class="text-sm text-yellow-600 mt-1">Duplicate{{ 's' if dup_count != 1 else '' }} (already exist)</p>
+    </div>
+  </div>
+
+  {% if sample %}
+  <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Sample (first 5 rows)</h2>
+  <div class="bg-white border border-gray-200 rounded-lg overflow-x-auto mb-6">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b">
+        <tr>
+          <th class="text-left px-3 py-2 text-gray-600">Word</th>
+          <th class="text-left px-3 py-2 text-gray-600">Meaning</th>
+          <th class="text-left px-3 py-2 text-gray-600">Language</th>
+          <th class="text-left px-3 py-2 text-gray-600 hidden md:table-cell">Lecture</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for row in sample %}
+        <tr>
+          <td class="px-3 py-2 font-medium">{{ row.get('word', '') }}</td>
+          <td class="px-3 py-2 text-gray-600 max-w-xs truncate">{{ row.get('meaning', '') }}</td>
+          <td class="px-3 py-2 text-gray-500">{{ row.get('target_language', '') }}</td>
+          <td class="px-3 py-2 text-gray-400 hidden md:table-cell">{{ row.get('lecture', 'General') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if dup_count > 0 %}
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+    <p class="text-sm font-medium text-yellow-800 mb-1">{{ dup_count }} duplicate word{{ 's' if dup_count != 1 else '' }} found</p>
+    <p class="text-xs text-yellow-700">
+      These words already exist in your vocabulary with the same lecture group.
+      You can skip them (default) or overwrite the existing entries.
+    </p>
+    {% if duplicates %}
+    <ul class="mt-2 text-xs text-yellow-700 list-disc list-inside">
+      {% for d in duplicates[:10] %}
+      <li><strong>{{ d.get('word', '') }}</strong> ({{ d.get('lecture', 'General') }})</li>
+      {% endfor %}
+      {% if duplicates|length > 10 %}
+      <li>… and {{ duplicates|length - 10 }} more</li>
+      {% endif %}
+    </ul>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <form method="POST" action="{{ url_for('io.confirm_import') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    {% if dup_count > 0 %}
+    <label class="flex items-center gap-2 mb-4 text-sm text-gray-700 cursor-pointer">
+      <input type="checkbox" name="overwrite" value="1"
+             class="w-4 h-4 text-indigo-600 rounded border-gray-300">
+      Overwrite duplicates with imported data
+    </label>
+    {% endif %}
+
+    <div class="flex gap-3">
+      {% if valid_count > 0 or (dup_count > 0) %}
+      <button type="submit"
+              class="bg-indigo-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-indigo-700">
+        Import {{ valid_count }} word{{ 's' if valid_count != 1 else '' }}
+      </button>
+      {% endif %}
+      <a href="{{ url_for('io.cancel_import') }}"
+         class="px-5 py-2 rounded text-sm font-medium border border-gray-300 text-gray-600 hover:bg-gray-50">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

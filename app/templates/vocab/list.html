@@ -5,10 +5,36 @@
 <div class="max-w-5xl mx-auto">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold">My Vocabulary</h1>
-    <a href="{{ url_for('vocab.add') }}"
-       class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700">
-      + Add Word
-    </a>
+    <div class="flex items-center gap-2">
+      <!-- Export dropdown -->
+      <div class="relative group">
+        <button class="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm font-medium hover:bg-gray-50 flex items-center gap-1">
+          Export
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-200 rounded shadow-lg
+                    hidden group-hover:block z-10 text-sm">
+          <a href="{{ url_for('io.export', format='csv', lecture=lecture_filter or '') }}"
+             class="block px-4 py-2 hover:bg-gray-50">CSV</a>
+          <a href="{{ url_for('io.export', format='tsv', lecture=lecture_filter or '') }}"
+             class="block px-4 py-2 hover:bg-gray-50">TSV</a>
+          <a href="{{ url_for('io.export', format='xlsx', lecture=lecture_filter or '') }}"
+             class="block px-4 py-2 hover:bg-gray-50">Excel</a>
+          <a href="{{ url_for('io.export', format='json', lecture=lecture_filter or '') }}"
+             class="block px-4 py-2 hover:bg-gray-50">JSON</a>
+        </div>
+      </div>
+      <a href="{{ url_for('io.import_view') }}"
+         class="border border-gray-300 text-gray-600 px-4 py-2 rounded text-sm font-medium hover:bg-gray-50">
+        Import
+      </a>
+      <a href="{{ url_for('vocab.add') }}"
+         class="bg-indigo-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-indigo-700">
+        + Add Word
+      </a>
+    </div>
   </div>
 
   <!-- Lecture filter -->

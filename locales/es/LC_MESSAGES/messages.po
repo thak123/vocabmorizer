@@ -1,0 +1,44 @@
+# Spanish translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-05-12 11:35+0200\n"
+"PO-Revision-Date: 2026-05-12 11:35+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/templates/base.html:17
+msgid "Vocabulary"
+msgstr "Vocabulario"
+
+#: app/templates/base.html:20
+msgid "Practice"
+msgstr "Práctica"
+
+#: app/templates/base.html:25
+msgid "Admin"
+msgstr "Admin"
+
+#: app/templates/base.html:27
+msgid "Sign out"
+msgstr "Cerrar sesión"
+
+#: app/templates/base.html:29
+msgid "Sign in"
+msgstr "Iniciar sesión"
+
+#: app/templates/base.html:30
+msgid "Register"
+msgstr "Registrarse"
+

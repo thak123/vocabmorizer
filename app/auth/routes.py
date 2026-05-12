@@ -109,3 +109,21 @@ def logout():
 @login_required
 def index():
     return render_template("home.html")
+
+
+@bp.route("/set-locale/<code>")
+def set_locale(code: str):
+    from flask import session
+
+    from app import SUPPORTED_LOCALES
+
+    if code in SUPPORTED_LOCALES:
+        session["locale"] = code
+        if current_user.is_authenticated and hasattr(current_user, "preferred_language"):
+            current_user.preferred_language = code
+            try:
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+
+    return redirect(request.referrer or url_for("auth.index"))
