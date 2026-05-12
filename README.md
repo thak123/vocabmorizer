@@ -28,6 +28,9 @@ python -m vocabmorizer
 
 The application will start at `http://localhost:5000`
 
+
+http://vocabmorizer.duckdns.org:8080`/
+
 ### Basic Usage
 
 1. **Add Vocabulary**: Click "Add New Word" and fill in the fields:
