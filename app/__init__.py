@@ -39,6 +39,7 @@ def create_app(config_name: str | None = None) -> Flask:
         static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
         static_url_path="/static",
     )
+    print('static_folder:', app.static_folder)
     app.config.from_object(config.get(config_name, config["default"]))
 
     db.init_app(app)
