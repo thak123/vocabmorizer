@@ -39,7 +39,6 @@ def create_app(config_name: str | None = None) -> Flask:
         static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
         static_url_path="/static",
     )
-    print('static_folder:', app.static_folder)
     app.config.from_object(config.get(config_name, config["default"]))
 
     db.init_app(app)
@@ -71,5 +70,14 @@ def create_app(config_name: str | None = None) -> Flask:
 
     # Ensure all models are imported so Flask-Migrate can detect them.
     from .models import user, vocabulary  # noqa: F401
+
+    @app.route("/")
+    def landing():
+        from flask import redirect, render_template, url_for
+        from flask_login import current_user
+
+        if current_user.is_authenticated:
+            return redirect(url_for("vocab.list_entries"))
+        return render_template("landing.html")
 
     return app
