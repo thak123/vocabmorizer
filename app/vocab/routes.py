@@ -27,26 +27,44 @@ def _entry_or_404(entry_id: str) -> VocabularyEntry:
 @login_required
 def list_entries():
     lecture_filter = request.args.get("lecture", "").strip()
+    lang_filter = request.args.get("lang", "").strip()
+
     query = VocabularyEntry.query.filter_by(user_id=current_user.id).order_by(
         VocabularyEntry.date_added.desc(), VocabularyEntry.word
     )
     if lecture_filter:
         query = query.filter_by(lecture=lecture_filter)
+    if lang_filter:
+        query = query.filter_by(target_language=lang_filter)
 
     entries = query.all()
-    lectures = (
+
+    lectures = [r[0] for r in (
         db.session.query(VocabularyEntry.lecture)
         .filter_by(user_id=current_user.id)
         .distinct()
         .order_by(VocabularyEntry.lecture)
         .all()
-    )
-    lectures = [r[0] for r in lectures]
+    )]
+    langs = [r[0] for r in (
+        db.session.query(VocabularyEntry.target_language)
+        .filter_by(user_id=current_user.id)
+        .distinct()
+        .order_by(VocabularyEntry.target_language)
+        .all()
+    )]
+
+    from .forms import LANGUAGE_CHOICES
+    lang_names = dict(LANGUAGE_CHOICES)
+
     return render_template(
         "vocab/list.html",
         entries=entries,
         lectures=lectures,
         lecture_filter=lecture_filter,
+        langs=langs,
+        lang_filter=lang_filter,
+        lang_names=lang_names,
     )
 
 
