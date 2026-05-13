@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Community Vocabulary — Vocabmorizer{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold">Community Vocabulary</h1>
+      <p class="text-sm text-gray-500 mt-0.5">{{ total }} public word{{ 's' if total != 1 else '' }} shared by members</p>
+    </div>
+    <a href="{{ url_for('vocab.list_entries') }}"
+       class="text-sm text-indigo-500 hover:underline">← My vocabulary</a>
+  </div>
+
+  <!-- Filters -->
+  <form method="GET" action="{{ url_for('vocab.community') }}" class="flex flex-wrap gap-2 mb-6">
+    <input type="text" name="q" value="{{ search }}" placeholder="Search words…"
+           class="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-400 flex-1 min-w-40">
+    {% if langs %}
+    <select name="lang" class="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-400">
+      <option value="">All languages</option>
+      {% for l in langs %}
+      <option value="{{ l }}" {% if lang_filter == l %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+    <button type="submit"
+            class="bg-indigo-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-indigo-700">
+      Search
+    </button>
+    {% if search or lang_filter or user_filter %}
+    <a href="{{ url_for('vocab.community') }}"
+       class="border border-gray-300 text-gray-600 px-4 py-1.5 rounded text-sm hover:bg-gray-50">
+      Clear
+    </a>
+    {% endif %}
+  </form>
+
+  {% if by_user %}
+    {% for user_id, entries in by_user.items() %}
+    {% set u = users.get(user_id) %}
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-sm font-bold">
+          {{ (u.name[0] if u else '?')|upper }}
+        </div>
+        <div>
+          <span class="font-semibold text-gray-800">{{ u.name if u else 'Unknown' }}</span>
+          <span class="text-xs text-gray-400 ml-2">{{ entries|length }} word{{ 's' if entries|length != 1 else '' }}</span>
+        </div>
+        <a href="{{ url_for('vocab.community', user_id=user_id, lang=lang_filter, q=search) }}"
+           class="text-xs text-indigo-500 hover:underline ml-auto">
+          View only this user
+        </a>
+      </div>
+
+      <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-2 font-medium text-gray-600">Word</th>
+              <th class="text-left px-4 py-2 font-medium text-gray-600">Meaning</th>
+              <th class="text-left px-4 py-2 font-medium text-gray-600 hidden md:table-cell">Translation</th>
+              <th class="text-left px-4 py-2 font-medium text-gray-600 hidden lg:table-cell">Lecture</th>
+              <th class="text-left px-4 py-2 font-medium text-gray-600 hidden lg:table-cell">Lang</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {% for entry in entries %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-gray-900">{{ entry.word }}</span>
+                  <button onclick="speak('{{ entry.word|e }}', '{{ entry.target_language }}')"
+                          class="text-gray-400 hover:text-indigo-500 text-xs" title="Listen">🔊</button>
+                </div>
+                {% if entry.synonyms %}
+                  <div class="text-xs text-gray-400">≈ {{ entry.synonyms | join(", ") }}</div>
+                {% endif %}
+              </td>
+              <td class="px-4 py-2.5 text-gray-600 max-w-xs">
+                <div class="truncate">{{ entry.meaning }}</div>
+                {% if entry.metadata_usage %}
+                  <div class="text-xs text-gray-400 truncate">{{ entry.metadata_usage }}</div>
+                {% endif %}
+              </td>
+              <td class="px-4 py-2.5 text-gray-500 hidden md:table-cell">{{ entry.translation_en }}</td>
+              <td class="px-4 py-2.5 text-gray-400 hidden lg:table-cell">{{ entry.lecture }}</td>
+              <td class="px-4 py-2.5 text-gray-400 hidden lg:table-cell">{{ entry.target_language }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <div class="text-center py-20 text-gray-400">
+    {% if search or lang_filter %}
+      <p class="text-lg mb-2">No results for your search.</p>
+      <a href="{{ url_for('vocab.community') }}" class="text-indigo-500 hover:underline">Clear filters</a>
+    {% else %}
+      <p class="text-lg mb-2">No public vocabulary yet.</p>
+      <p class="text-sm">Be the first — mark some of your entries as <strong>Public</strong> from
+        <a href="{{ url_for('vocab.list_entries') }}" class="text-indigo-500 hover:underline">My Vocabulary</a>.
+      </p>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/tts.js') }}"></script>
+{% endblock %}

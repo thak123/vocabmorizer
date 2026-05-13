@@ -126,3 +126,84 @@ def delete(entry_id: str):
     db.session.commit()
     flash(f"'{entry.word}' deleted.", "info")
     return redirect(url_for("vocab.list_entries"))
+
+
+@bp.route("/<entry_id>/toggle-public", methods=["POST"])
+@login_required
+def toggle_public(entry_id: str):
+    entry = _entry_or_404(entry_id)
+    entry.is_public = not entry.is_public
+    db.session.commit()
+    return redirect(request.referrer or url_for("vocab.list_entries"))
+
+
+@bp.route("/lecture/<path:lecture>/toggle-public", methods=["POST"])
+@login_required
+def toggle_lecture_public(lecture: str):
+    make_public = request.form.get("make_public") == "1"
+    VocabularyEntry.query.filter_by(
+        user_id=current_user.id, lecture=lecture
+    ).update({"is_public": make_public})
+    db.session.commit()
+    label = "public" if make_public else "private"
+    flash(f"All entries in '{lecture}' set to {label}.", "success")
+    return redirect(url_for("vocab.list_entries", lecture=lecture))
+
+
+@bp.route("/community")
+@login_required
+def community():
+    from ..models.user import User
+
+    search = request.args.get("q", "").strip()
+    lang_filter = request.args.get("lang", "").strip()
+    user_filter = request.args.get("user_id", "").strip()
+
+    query = VocabularyEntry.query.filter_by(is_public=True)
+
+    if search:
+        like = f"%{search}%"
+        query = query.filter(
+            db.or_(
+                VocabularyEntry.word.ilike(like),
+                VocabularyEntry.meaning.ilike(like),
+                VocabularyEntry.translation_en.ilike(like),
+            )
+        )
+    if lang_filter:
+        query = query.filter_by(target_language=lang_filter)
+    if user_filter:
+        query = query.filter_by(user_id=user_filter)
+
+    entries = query.order_by(VocabularyEntry.user_id, VocabularyEntry.lecture, VocabularyEntry.word).all()
+
+    # Group by user
+    from collections import defaultdict
+    by_user: dict = defaultdict(list)
+    for e in entries:
+        by_user[e.user_id].append(e)
+
+    # Fetch user names
+    user_ids = list(by_user.keys())
+    users = {u.id: u for u in User.query.filter(User.id.in_(user_ids)).all()}
+
+    # Available filter options
+    langs = (
+        db.session.query(VocabularyEntry.target_language)
+        .filter_by(is_public=True)
+        .distinct()
+        .order_by(VocabularyEntry.target_language)
+        .all()
+    )
+    langs = [r[0] for r in langs]
+
+    return render_template(
+        "vocab/community.html",
+        by_user=by_user,
+        users=users,
+        total=len(entries),
+        search=search,
+        lang_filter=lang_filter,
+        user_filter=user_filter,
+        langs=langs,
+    )

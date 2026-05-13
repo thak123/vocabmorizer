@@ -37,9 +37,9 @@
     </div>
   </div>
 
-  <!-- Lecture filter -->
+  <!-- Lecture filter + bulk visibility toggle -->
   {% if lectures %}
-  <div class="flex flex-wrap gap-2 mb-6">
+  <div class="flex flex-wrap gap-2 mb-4">
     <a href="{{ url_for('vocab.list_entries') }}"
        class="px-3 py-1 rounded-full text-sm border {% if not lecture_filter %}bg-indigo-600 text-white border-indigo-600{% else %}border-gray-300 text-gray-600 hover:border-indigo-400{% endif %}">
       All
@@ -51,6 +51,26 @@
     </a>
     {% endfor %}
   </div>
+
+  {% if lecture_filter %}
+  <div class="flex items-center gap-2 mb-4 text-sm">
+    <span class="text-gray-500">Make all in <strong>{{ lecture_filter }}</strong>:</span>
+    <form method="POST" action="{{ url_for('vocab.toggle_lecture_public', lecture=lecture_filter) }}" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="make_public" value="1">
+      <button type="submit" class="px-3 py-1 rounded text-xs font-medium bg-green-50 text-green-700 border border-green-200 hover:bg-green-100">
+        Public
+      </button>
+    </form>
+    <form method="POST" action="{{ url_for('vocab.toggle_lecture_public', lecture=lecture_filter) }}" class="inline">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="make_public" value="0">
+      <button type="submit" class="px-3 py-1 rounded text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100">
+        Private
+      </button>
+    </form>
+  </div>
+  {% endif %}
   {% endif %}
 
   {% if entries %}
@@ -63,6 +83,7 @@
           <th class="text-left px-4 py-3 font-medium text-gray-600 hidden md:table-cell">Lecture</th>
           <th class="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Date</th>
           <th class="text-left px-4 py-3 font-medium text-gray-600 hidden lg:table-cell">Lang</th>
+          <th class="text-center px-4 py-3 font-medium text-gray-600">Visibility</th>
           <th class="px-4 py-3"></th>
         </tr>
       </thead>
@@ -86,6 +107,18 @@
           <td class="px-4 py-3 text-gray-500 hidden md:table-cell">{{ entry.lecture }}</td>
           <td class="px-4 py-3 text-gray-400 hidden lg:table-cell">{{ entry.date_added }}</td>
           <td class="px-4 py-3 text-gray-400 hidden lg:table-cell">{{ entry.target_language }}</td>
+          <td class="px-4 py-3 text-center">
+            <form method="POST" action="{{ url_for('vocab.toggle_public', entry_id=entry.id) }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit"
+                      title="{{ 'Public — click to make private' if entry.is_public else 'Private — click to make public' }}"
+                      class="px-2 py-0.5 rounded text-xs font-medium
+                        {% if entry.is_public %}bg-green-100 text-green-700 border border-green-200 hover:bg-green-200
+                        {% else %}bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200{% endif %}">
+                {{ 'Public' if entry.is_public else 'Private' }}
+              </button>
+            </form>
+          </td>
           <td class="px-4 py-3 text-right whitespace-nowrap">
             <a href="{{ url_for('vocab.edit', entry_id=entry.id) }}"
                class="text-indigo-500 hover:underline mr-3">Edit</a>

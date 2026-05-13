@@ -19,6 +19,9 @@
         <a href="{{ url_for('practice.setup') }}" class="text-gray-600 hover:underline hidden sm:inline">
           {{ _('Practice') }}
         </a>
+        <a href="{{ url_for('vocab.community') }}" class="text-gray-600 hover:underline hidden sm:inline">
+          Community
+        </a>
         <span class="text-gray-400">|</span>
         <span class="text-gray-500">{{ current_user.name }}</span>
         {% if current_user.is_admin() %}

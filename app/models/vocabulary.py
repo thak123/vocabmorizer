@@ -24,6 +24,7 @@ class VocabularyEntry(db.Model):
     metadata_usage = db.Column(db.Text, nullable=True)
     target_language = db.Column(db.String(8), nullable=False, default="en")
     image_path = db.Column(db.String(500), nullable=True)
+    is_public = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(
         db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
